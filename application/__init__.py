@@ -1,2 +1,4 @@
-from .app import app,manager
-import application.views,db
+from .app import app,manager,db
+import application.views
+import application.commands
+import application.models

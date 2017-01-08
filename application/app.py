@@ -1,18 +1,17 @@
 #! /usr/bin/env python3
 from flask import Flask
 import os.path
-
-def mkpath(p):
-    return os.path.normpath(
-        os.path.join(
-            os.path.dirname(__file__),p))
-
 app = Flask(__name__)
 app.debug= True
-
-from flask.ext.script import Manager
+from flask_script import Manager
 manager = Manager(app)
+def mkpath(p):
+    return os.path.join(os.path.dirname(__file__),p)
+
+
+
+
 
 from flask_sqlalchemy import SQLAlchemy
-app.config['SQLALCHEMYD_DATABASE_URI']=('sqlite:///'+mkpath('../myapp.db'))
+app.config['SQLALCHEMY_DATABASE_URI']=('sqlite:///'+mkpath('../albums.db'))
 db=SQLAlchemy(app)
