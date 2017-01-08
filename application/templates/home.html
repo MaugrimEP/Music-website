@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{%block main%}
+  <h1> {{title}} </h1>
+  <p> Bienvenu sur mon site</p>
+  <p> {{SizeSample}} Musiques
+  <ul>
+    {%for m in musics%}
+    <li> {{m.title}} </li>
+    {%endfor%}
+  </ul>
+</p>
+
+{% endblock%}
+
+{%block js%}
+
+curtab="home-tab";
+
+{%endblock%}

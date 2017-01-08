@@ -39,4 +39,7 @@ class Music(db.Model):
     title=db.Column(db.String(200))
 
     def __repr__(self):
-        return "<Music (%d) %s" % (self.id,self.title)
+        return "<Music (%d) %s>" % (self.id,self.title)
+
+def getSimpleSample(SizeSample):
+    return Music.query.limit(SizeSample).all()
