@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{%block main%}
+  <h1> {{title}} </h1>
+    <p>
+      {% for m in musics %}
+
+
+
+      <div class="col-xs-12 col-sm-12 col-md-6 book_img"><a href="{{ url_for('music_by_id',id=m.id) }}">
+        
+      </a></div>
+      {%endfor%}
+    </p>
+{% endblock%}
+
+{%block js%}
+
+curtab="musics_all-tab";
+
+{%endblock%}
