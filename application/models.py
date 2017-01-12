@@ -43,3 +43,12 @@ class Music(db.Model):
 
 def getSimpleSample(SizeSample):
     return Music.query.limit(SizeSample).all()
+
+def music_by_id(id):
+    return Music.query.get_or_404(id)
+
+def genresFromMusicId(id):
+    return Genre.query.join(Classification).filter(Classification.idMusic==id).all()
+
+def author_by_id(id):
+    return Author.query.get_or_404(id)

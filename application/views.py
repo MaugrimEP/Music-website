@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 from .app import app
-from flask import render_template, url_for
+from flask import render_template
+from flask import url_for
 from application import models
 
 @app.route("/")
@@ -10,4 +11,18 @@ def home():
 	title="Home",
 	SizeSample=10,
 	musics=models.getSimpleSample(10),
+	)
+
+@app.route("/musics/<int:id>")
+def music_by_id(id):
+	music=models.music_by_id(id)
+	genres=models.genresFromMusicId(id)
+	author=models.author_by_id(id)
+	parent=models.author_by_id(id)
+	return render_template(
+	"music_by_id.html",
+	music=music,
+	genres=genres,
+	author=author,
+	parent=parent,
 	)
