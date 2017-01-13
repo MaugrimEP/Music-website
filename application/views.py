@@ -26,3 +26,11 @@ def music_by_id(id):
 	author=author,
 	parent=parent,
 	)
+
+@app.route("/authors/<int:id>")
+def musics_by_author(id):
+	author=models.author_by_id(id)
+	return render_template(
+	"musics_by_author.html",
+	author=author,
+	)

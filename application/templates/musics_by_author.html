@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{%block main%}
+    <h1>{{author.name}}</h1>
+
+    <ul>
+    {%for music in author.musics%}
+    <li>
+      <ul>
+        <a href="{{ url_for('music_by_id',id=music.id) }}" >
+        <li>{{music.title}}</li>
+        <li><img src="{{ url_for('static', filename='images/'+music.img) }}" /></li>
+        </a>
+      </ul>
+    </li>
+    {%endfor%}
+    </ul>
+
+{% endblock%}
