@@ -45,3 +45,14 @@ def musics_all(letter='A'):
 	listeMusics=listeMusics,
 	tableau=tableau,
 	)
+
+@app.route("/authors/<string:letter>")
+def authors_all(letter='A'):
+	tableau=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+	listeAuthors=models.authors_by_letter(letter)
+	return render_template(
+	"authors_all.html",
+	letter=letter,
+	listeAuthors=listeAuthors,
+	tableau=tableau,
+	)

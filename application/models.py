@@ -55,3 +55,6 @@ def author_by_id(id):
 
 def musics_by_letter(letter):
     return Music.query.filter(Music.title.like(letter+"%")).all()
+
+def authors_by_letter(letter):
+    return Author.query.filter(Author.name.like(letter+"%")).all()

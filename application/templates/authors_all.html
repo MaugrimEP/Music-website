@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{%block main%}
+  <h1> Tout les authors </h1>
+    <ul>
+    {%for l in tableau%}
+      <li><a href="{{ url_for('authors_all',letter=l) }}">{{l}}</a></li>
+    {%endfor%}
+    </ul>
+    <p>
+      <ul>
+      {% for a in listeAuthors %}
+      <li>
+      <a href="{{ url_for('musics_by_author',id=a.id) }}">{{a.name}}</a>
+      </li>
+      {%endfor%}
+      </ul>
+    </p>
+{% endblock%}
+
+{%block js%}
+
+curtab="authors_all-tab";
+
+{%endblock%}
