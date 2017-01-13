@@ -1,15 +1,19 @@
 {% extends "base.html" %}
 {%block main%}
-  <h1> {{title}} </h1>
+  <h1> Toutes les musiques </h1>
+    <ul>
+    {%for l in tableau%}
+      <li><a href="{{ url_for('musics_all',letter=l) }}">{{l}}</a></li>
+    {%endfor%}
+    </ul>
     <p>
-      {% for m in musics %}
-
-
-
-      <div class="col-xs-12 col-sm-12 col-md-6 book_img"><a href="{{ url_for('music_by_id',id=m.id) }}">
-        
-      </a></div>
+      <ul>
+      {% for m in listeMusics %}
+      <li>
+      <a href="{{ url_for('music_by_id',id=m.id) }}">{{m.title}}</a>
+      </li>
       {%endfor%}
+      </ul>
     </p>
 {% endblock%}
 

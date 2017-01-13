@@ -52,3 +52,6 @@ def genresFromMusicId(id):
 
 def author_by_id(id):
     return Author.query.get_or_404(id)
+
+def musics_by_letter(letter):
+    return Music.query.filter(Music.title.like(letter+"%")).all()
