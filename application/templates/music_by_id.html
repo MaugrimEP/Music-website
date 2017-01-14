@@ -2,7 +2,9 @@
 {%block main%}
     <h1>{{music.title}}</h1>
     <ul>
+      {%if music.img%}
       <li><img src="{{ url_for('static', filename='images/'+music.img) }}"/></li>
+      {%endif%}
       <a href="{{ url_for('musics_by_author',id=music.author.id) }}" >
         <li>Author : {{music.author.name}}</li>
       </a>

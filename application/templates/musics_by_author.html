@@ -8,7 +8,9 @@
       <ul>
         <a href="{{ url_for('music_by_id',id=music.id) }}" >
         <li>{{music.title}}</li>
+        {%if music.img%}
         <li><img src="{{ url_for('static', filename='images/'+music.img) }}" /></li>
+        {%endif%}
         </a>
       </ul>
     </li>

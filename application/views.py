@@ -17,8 +17,8 @@ def home():
 def music_by_id(id):
 	music=models.music_by_id(id)
 	genres=models.genresFromMusicId(id)
-	author=models.author_by_id(id)
-	parent=models.author_by_id(id)
+	author=models.author_by_id(music.by)
+	parent=models.author_by_id(music.parent)
 	return render_template(
 	"music_by_id.html",
 	music=music,
