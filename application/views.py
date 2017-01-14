@@ -1,8 +1,10 @@
 #! /usr/bin/env python3
-from .app import app
+from .app import app, db
 from flask import render_template
-from flask import url_for
+from flask import url_for, redirect
 from application import models
+
+tableau=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 
 @app.route("/")
 def home():
@@ -37,7 +39,6 @@ def musics_by_author(id):
 
 @app.route("/musics/<string:letter>")
 def musics_all(letter='A'):
-	tableau=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 	listeMusics=models.musics_by_letter(letter)
 	return render_template(
 	"musics_all.html",
@@ -48,7 +49,6 @@ def musics_all(letter='A'):
 
 @app.route("/musics/Autre")
 def musics_autre():
-	tableau=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 	listeMusics=models.musics_Autre()
 	return render_template(
 	"musics_autre.html",
@@ -58,7 +58,6 @@ def musics_autre():
 
 @app.route("/authors/<string:letter>")
 def authors_all(letter='A'):
-	tableau=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 	listeAuthors=models.authors_by_letter(letter)
 	return render_template(
 	"authors_all.html",
@@ -69,10 +68,35 @@ def authors_all(letter='A'):
 
 @app.route("/authors/Autre")
 def authors_autre():
-	tableau=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 	listeAuthors=models.authors_Autre()
 	return render_template(
 	"authors_autre.html",
 	listeAuthors=listeAuthors,
 	tableau=tableau,
+	)
+
+@app.route("/edit/author/<int:id>")
+def edit_authors(id):
+	a = models.author_by_id(id)
+	f = models.AuthorForm(id=a.id, name=a.name)
+	return render_template(
+	"edit_authors.html",
+	author=a,
+	form=f,
+	)
+
+@app.route("/save/author/<int:id>", methods=("POST",))
+def save_author(id):
+	a = None
+	f = models.AuthorForm()
+	if f.validate_on_submit():
+		id = int(f.id.data)
+		a = models.author_by_id(id)
+		a.name = f.name.data
+		db.session.commit()
+		return redirect(url_for("musics_by_author",id=a.id))
+	return render_template(
+	"edit_authors.html",
+	author=models.author_by_id(id),
+	form=f,
 	)

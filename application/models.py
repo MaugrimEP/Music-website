@@ -1,6 +1,23 @@
 from .app import db
 
+from flask_wtf import FlaskForm
+from wtforms import StringField, HiddenField
+from wtforms.validators import DataRequired
+
+class AuthorForm(FlaskForm):
+    id = HiddenField('id')
+    name = StringField('Nom', validators=[DataRequired()])
+
 class Author(db.Model):
+
+    @staticmethod
+    def getName(author):
+        return author.name
+
+    @staticmethod
+    def trie(listeAuthors):
+        return sorted(listeAuthors,key=Author.getName)
+
     id = db.Column(db.Integer,primary_key=True)
     name = db.Column(db.String(200))
 
@@ -25,6 +42,15 @@ class Classification(db.Model):
 
 
 class Music(db.Model):
+
+    @staticmethod
+    def getTitle(music):
+        return music.title
+
+    @staticmethod
+    def trie(listeMusics):
+        return sorted(listeMusics,key=Music.getTitle)
+
     by=db.Column(db.Integer,db.ForeignKey("author.id"))
     #we also want to have the musics for one author
     author = db.relationship("Author",
@@ -55,20 +81,20 @@ def author_by_id(id):
 
 def musics_by_letter(letter):
     opFilter=[Music.title.like(letter.lower()+"%")|(Music.title.like(letter.upper()+"%"))]
-    return Music.query.filter(*opFilter).all()
+    return Music.trie(Music.query.filter(*opFilter).all())
 
 def authors_by_letter(letter):
     opFilter=[Author.name.like(letter.lower()+"%")|(Author.name.like(letter.upper()+"%"))]
-    return Author.query.filter(*opFilter).all()
+    return Author.trie(Author.query.filter(*opFilter).all())
 
 def musics_Autre():
     T=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
     t=T+[l.lower() for l in T]
     opFilter=[~(Music.title.like(letter+"%")) for letter in t]
-    return Music.query.filter(*opFilter)
+    return Music.trie(Music.query.filter(*opFilter))
 
 def authors_Autre():
     T=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
     t=T+[l.lower() for l in T]
     opFilter=[~(Author.name.like(letter+"%")) for letter in t]
-    return Author.query.filter(*opFilter)
+    return Author.trie(Author.query.filter(*opFilter))
