@@ -54,7 +54,21 @@ def author_by_id(id):
     return Author.query.get_or_404(id)
 
 def musics_by_letter(letter):
-    return Music.query.filter(Music.title.like(letter+"%")).all()
+    opFilter=[Music.title.like(letter.lower()+"%")|(Music.title.like(letter.upper()+"%"))]
+    return Music.query.filter(*opFilter).all()
 
 def authors_by_letter(letter):
-    return Author.query.filter(Author.name.like(letter+"%")).all()
+    opFilter=[Author.name.like(letter.lower()+"%")|(Author.name.like(letter.upper()+"%"))]
+    return Author.query.filter(*opFilter).all()
+
+def musics_Autre():
+    T=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+    t=T+[l.lower() for l in T]
+    opFilter=[~(Music.title.like(letter+"%")) for letter in t]
+    return Music.query.filter(*opFilter)
+
+def authors_Autre():
+    T=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+    t=T+[l.lower() for l in T]
+    opFilter=[~(Author.name.like(letter+"%")) for letter in t]
+    return Author.query.filter(*opFilter)

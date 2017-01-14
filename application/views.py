@@ -13,7 +13,7 @@ def home():
 	musics=models.getSimpleSample(10),
 	)
 
-@app.route("/musics/<int:id>")
+@app.route("/musicDetails/<int:id>")
 def music_by_id(id):
 	music=models.music_by_id(id)
 	genres=models.genresFromMusicId(id)
@@ -27,7 +27,7 @@ def music_by_id(id):
 	parent=parent,
 	)
 
-@app.route("/authors/<int:id>")
+@app.route("/authorDetails/<int:id>")
 def musics_by_author(id):
 	author=models.author_by_id(id)
 	return render_template(
@@ -46,6 +46,16 @@ def musics_all(letter='A'):
 	tableau=tableau,
 	)
 
+@app.route("/musics/Autre")
+def musics_autre():
+	tableau=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+	listeMusics=models.musics_Autre()
+	return render_template(
+	"musics_autre.html",
+	listeMusics=listeMusics,
+	tableau=tableau,
+	)
+
 @app.route("/authors/<string:letter>")
 def authors_all(letter='A'):
 	tableau=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
@@ -53,6 +63,16 @@ def authors_all(letter='A'):
 	return render_template(
 	"authors_all.html",
 	letter=letter,
+	listeAuthors=listeAuthors,
+	tableau=tableau,
+	)
+
+@app.route("/authors/Autre")
+def authors_autre():
+	tableau=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+	listeAuthors=models.authors_Autre()
+	return render_template(
+	"authors_autre.html",
 	listeAuthors=listeAuthors,
 	tableau=tableau,
 	)

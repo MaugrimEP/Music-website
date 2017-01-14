@@ -47,7 +47,7 @@ def loaddb(filename):
     #if fact we dont care about the id given into the yaml file because its safer to recalcute the ids.
     #in case an id is missing into the yaml file
     for music in musics:
-        if music["title"] not in calculetedMusics:
+        if music["title"] not in calculetedMusics and len(music["title"])!=0:
             by = calculetedAuthors[music["by"]]
             parent = calculetedAuthors[music["parent"]]
             o = Music(
@@ -64,16 +64,17 @@ def loaddb(filename):
 
     #Classification creation
     for music in musics:
-        genres=music["genre"]
-        for genre in genres:
-            idGenre = calculetedGenres[genre].id
-            idMusic = calculetedMusics[music["title"]].id
+        if len(music["title"])!=0:
+            genres=music["genre"]
+            for genre in genres:
+                idGenre = calculetedGenres[genre].id
+                idMusic = calculetedMusics[music["title"]].id
 
-            if (idGenre,idMusic) not in calculetedClassification:
-                o=Classification(
-                    idGenre=idGenre,
-                    idMusic=idMusic,
-                )
-                calculetedClassification.add((idGenre,idMusic))
-                db.session.add(o)
+                if (idGenre,idMusic) not in calculetedClassification:
+                    o=Classification(
+                        idGenre=idGenre,
+                        idMusic=idMusic,
+                    )
+                    calculetedClassification.add((idGenre,idMusic))
+                    db.session.add(o)
     db.session.commit()
