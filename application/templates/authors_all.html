@@ -1,11 +1,17 @@
 {% extends "base.html" %}
+
+{%block styles%}
+{{super()}}
+<link rel="stylesheet" href="{{ url_for('static',filename='displayAll.css') }}">
+{%endblock%}
+
 {%block main%}
   <h1> Tout les authors </h1>
     <ul>
     {%for l in tableau%}
-      <li><a href="{{ url_for('authors_all',letter=l) }}">{{l}}</a></li>
+      <li class="listPerso"><a href="{{ url_for('authors_all',letter=l) }}">{{l}}</a></li>
     {%endfor%}
-      <li><a href="{{ url_for('authors_autre')}}">Autre</a></li>
+      <li class="listPerso"><a href="{{ url_for('authors_autre')}}">Autre</a></li>
     </ul>
     <p>
       <ul>

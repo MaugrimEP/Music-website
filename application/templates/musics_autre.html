@@ -1,17 +1,38 @@
 {% extends "base.html" %}
+
+{%block styles%}
+{{super()}}
+<link rel="stylesheet" href="{{ url_for('static',filename='displayAll.css') }}">
+{%endblock%}
+
 {%block main%}
   <h1> Toutes les musiques </h1>
     <ul>
     {%for l in tableau%}
-      <li><a href="{{ url_for('musics_all',letter=l) }}">{{l}}</a></li>
+      <li class="listPerso"><a href="{{ url_for('musics_all',params=l+"1") }}">{{l}}</a></li>
     {%endfor%}
-      <li><a href="{{url_for('musics_autre')}}">Autre</a><li>
+      <li class="listPerso"><a href="{{url_for('musics_autre',page=1)}}">Autre</a><li>
     </ul>
+
+    <ul>
+      {%for i in listePages%}
+      <li class="listPerso"><a href="{{url_for('musics_autre',page=(i-1)|string)}}">{{i}}</a></li>
+      {%endfor%}
+    </ul>
+
+
     <p>
       <ul>
       {% for m in listeMusics %}
       <li>
-      <a href="{{ url_for('music_by_id',id=m.id) }}">{{m.title}}</a>
+      <a href="{{ url_for('music_by_id',id=m.id) }}">
+          {%if m.img%}
+            <img src="{{ url_for('static', filename='images/'+m.img) }}" />
+          {%endif%}
+
+
+        {{m.title}}
+      </a>
       </li>
       {%endfor%}
       </ul>

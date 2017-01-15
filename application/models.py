@@ -108,6 +108,8 @@ class Music(db.Model):
         return sorted(listeMusics,key=Music.getTitle)
 
     by=db.Column(db.Integer,db.ForeignKey("author.id"))
+    author = db.relationship("Author",
+            backref=db.backref("musics",lazy="dynamic"))
 
     id=db.Column(db.Integer,primary_key=True)
     # we dont put the genre here but in a new talbe

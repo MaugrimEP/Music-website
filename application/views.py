@@ -11,6 +11,8 @@ from flask import request
 
 from flask_login import login_required
 
+import math
+
 tableau=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 
 @app.route("/")
@@ -39,8 +41,6 @@ def music_by_id(id):
 @app.route("/authorDetails/<int:id>")
 def musics_by_author(id):
 	author=models.author_by_id(id)
-	# isBy=len([m for m in author.musics])!=0
-	# isParent=len([c for c in author.childrens])!=0
 	listeBy=[m for m in models.getMusicsFromAuthor(id)]
 	listeParent=[c for c in models.getMusicsFromParent(id)]
 	return render_template(
@@ -50,23 +50,44 @@ def musics_by_author(id):
 	listeParent=listeParent,
 	)
 
-@app.route("/musics/<string:letter>")
-def musics_all(letter='A'):
+@app.route("/musics/<string:params>")
+def musics_all(params='A1'):
+	letter=params[0]
+	page=int(params[1:])-1
+	sizeSample=20
+
 	listeMusics=models.musics_by_letter(letter)
+	fin=min(len(listeMusics),page+sizeSample)
+	sample=[listeMusics[i] for i in range(page,fin)]
+	nbPage=math.ceil(len(listeMusics)/sizeSample)
+
 	return render_template(
 	"musics_all.html",
 	letter=letter,
-	listeMusics=listeMusics,
+	listeMusics=sample,
 	tableau=tableau,
+	page=page+1,
+	nbPage=nbPage+1,
+	listePages=[i for i in range(1,nbPage+1)]
 	)
 
-@app.route("/musics/Autre")
-def musics_autre():
+@app.route("/musics/Autre/<int:page>")
+def musics_autre(page=1):
+	page=page-1
+	sizeSample=20
+
 	listeMusics=models.musics_Autre()
+	fin=min(len(listeMusics),page+sizeSample)
+	sample=[listeMusics[i] for i in range(page,fin)]
+	nbPage=math.ceil(len(listeMusics)/sizeSample)
+
 	return render_template(
 	"musics_autre.html",
-	listeMusics=listeMusics,
+	listeMusics=sample,
 	tableau=tableau,
+	page=page+1,
+	nbPage=nbPage+1,
+	listePages=[i for i in range(1,nbPage+1)],
 	)
 
 @app.route("/authors/<string:letter>")
