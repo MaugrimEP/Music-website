@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {%block main%}
-    <h1>{{author.name}}</h1>
+    <h1>{{author.name}}</h1><a href="{{url_for('edit_authors',id=author.id)}}">Edit name</a>
 
     <ul>
     {%for music in author.musics%}
