@@ -39,9 +39,15 @@ def music_by_id(id):
 @app.route("/authorDetails/<int:id>")
 def musics_by_author(id):
 	author=models.author_by_id(id)
+	# isBy=len([m for m in author.musics])!=0
+	# isParent=len([c for c in author.childrens])!=0
+	listeBy=[m for m in models.getMusicsFromAuthor(id)]
+	listeParent=[c for c in models.getMusicsFromParent(id)]
 	return render_template(
 	"musics_by_author.html",
 	author=author,
+	listeBy=listeBy,
+	listeParent=listeParent,
 	)
 
 @app.route("/musics/<string:letter>")

@@ -3,8 +3,10 @@
     <h1>{{author.name}}</h1>
     <a href="{{url_for('edit_authors',id=author.id)}}">Edit name</a>
 
+    {%if listeBy|length!=0%}
+    <h2> Musics enregistrées </h2>
     <ul>
-    {%for music in author.musics%}
+    {%for music in listeBy%}
     <li>
       <ul>
         <a href="{{ url_for('music_by_id',id=music.id) }}" >
@@ -17,6 +19,25 @@
     </li>
     {%endfor%}
     </ul>
+    {%endif%}
+
+    {%if listeParent|length!=0%}
+    <h2> Musics écrites </h2>
+    <ul>
+    {%for music in listeParent%}
+    <li>
+      <ul>
+        <a href="{{ url_for('music_by_id',id=music.id) }}" >
+        <li>{{music.title}}</li>
+        {%if music.img%}
+        <li><img src="{{ url_for('static', filename='images/'+music.img) }}" /></li>
+        {%endif%}
+        </a>
+      </ul>
+    </li>
+    {%endfor%}
+    </ul>
+    {%endif%}
 
 {% endblock%}
 {%block js%}

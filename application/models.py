@@ -108,15 +108,13 @@ class Music(db.Model):
         return sorted(listeMusics,key=Music.getTitle)
 
     by=db.Column(db.Integer,db.ForeignKey("author.id"))
-    #we also want to have the musics for one author
-    author = db.relationship("Author",
-        backref=db.backref("musics",lazy="dynamic"))
-
 
     id=db.Column(db.Integer,primary_key=True)
     # we dont put the genre here but in a new talbe
     img=db.Column(db.String(200))
-    parent=db.Column(db.String(200))
+
+    parent=db.Column(db.Integer)
+
     releaseYear=db.Column(db.Integer)
     title=db.Column(db.String(200))
 
@@ -164,3 +162,9 @@ def add_User(username, password):
 
 def check_username_free(username):
     return len(User.query.filter(User.username==username).all())==0
+
+def getMusicsFromAuthor(id):
+    return Music.query.filter(Music.by==id).all()
+
+def getMusicsFromParent(id):
+    return Music.query.filter(Music.parent==id).all()
