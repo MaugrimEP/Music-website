@@ -100,3 +100,25 @@ def save_author(id):
 	author=models.author_by_id(id),
 	form=f,
 	)
+
+@app.route("/add/author")
+def add_authors():
+	f = models.AuthorForm()
+	return render_template(
+	"add_authors.html",
+	form=f,
+	)
+
+@app.route("/new/author", methods=("POST",))
+def new_author():
+	a = None
+	f = models.AuthorForm()
+	if f.validate_on_submit():
+		a = models.Author(name=f.name.data)
+		db.session.add(a)
+		db.session.commit()
+		return redirect(url_for('musics_by_author', id=a.id))
+	return render_template(
+	"add_authors.html",
+	form=f,
+	)
