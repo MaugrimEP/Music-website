@@ -4,6 +4,11 @@ from flask import render_template
 from flask import url_for, redirect
 from application import models
 
+from flask_login import logout_user
+
+from flask_login import login_user, current_user
+from flask import request
+
 tableau=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 
 @app.route("/")
@@ -142,5 +147,23 @@ def register():
 		return redirect(url_for('home'))
 	return render_template(
 		'sign_up.html',
-		form=form,
+		form=form
 		)
+
+@app.route("/login", methods=("GET","POST",))
+def login():
+	f = models.LoginForm()
+	if f.validate_on_submit():
+		user = f.get_authenticated_user()
+		if user:
+			login_user(user)
+			return redirect(url_for("home"))
+	return render_template(
+	"login.html",
+	form = f
+	)
+
+@app.route("/logout")
+def logout():
+	logout_user()
+	return redirect(url_for('home'))

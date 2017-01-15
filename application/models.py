@@ -10,23 +10,54 @@ from wtforms.validators import Length, EqualTo,ValidationError
 
 from hashlib import sha256
 
+from .app import login_manager
+@login_manager.user_loader
+def load_user(username):
+    return User.query.get(username)
+
+def userNotFound(form, usernameField):
+    if check_username_free(usernameField.data):
+        raise ValidationError('User not found')
+
+def usernameNotFree(form, fieldUsername):
+    if not check_username_free(fieldUsername.data):
+        raise ValidationError('Name is already taken')
+
+def passwordDontMatch(form, fielfPW):
+    user = User.query.get(form.username.data)
+    if user:
+        m =sha256()
+        m.update(form.password.data.encode())
+        passwd = m.hexdigest()
+        if passwd != user.password:
+            raise ValidationError('Wrong Password')
+
+
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators = [DataRequired(),userNotFound])
+    password = PasswordField('Password', validators = [DataRequired(),passwordDontMatch])
+
+    def get_authenticated_user(self):
+        user = User.query.get(self.username.data)
+        if user is None:
+            return None
+        m = sha256()
+        m.update(self.password.data.encode())
+        passwd = m.hexdigest()
+        return user if passwd == user.password else None
+
 class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50))
+    username = db.Column(db.String(50), primary_key=True)
     password = db.Column(db.String(64))
 
     def get_id(self):
-        return self.id
+        return self.username
 
 class RegistrationForm(FlaskForm):
     id = HiddenField('id')
-    username = StringField('UserName', validators= [DataRequired(),Length(min=4, max=25)])
+    username = StringField('UserName', validators= [DataRequired(),Length(min=4, max=25),usernameNotFree])
     password = PasswordField('New Password', validators= [ DataRequired(), EqualTo('confirm', message='Passwords must match'),Length(min=4, max=25) ] )
     confirm = PasswordField ('Repeat Password')
-
-    def validate_username(form, fieldUsername):
-        if not check_username_free(fieldUsername.data):
-            raise ValidationError('Name is already taken')
 
 class AuthorForm(FlaskForm):
     id = HiddenField('id')
