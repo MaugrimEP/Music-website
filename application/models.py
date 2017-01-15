@@ -6,7 +6,7 @@ from wtforms.validators import DataRequired
 
 from flask_login import UserMixin
 from wtforms import PasswordField
-from wtforms.validators import Length, EqualTo
+from wtforms.validators import Length, EqualTo,ValidationError
 
 from hashlib import sha256
 
@@ -21,8 +21,12 @@ class User(db.Model, UserMixin):
 class RegistrationForm(FlaskForm):
     id = HiddenField('id')
     username = StringField('UserName', validators= [DataRequired(),Length(min=4, max=25)])
-    password = PasswordField('New Password', validators= [ DataRequired(), EqualTo('confirm', message='Passwords must match') ] )
+    password = PasswordField('New Password', validators= [ DataRequired(), EqualTo('confirm', message='Passwords must match'),Length(min=4, max=25) ] )
     confirm = PasswordField ('Repeat Password')
+
+    def validate_username(form, fieldUsername):
+        if not check_username_free(fieldUsername.data):
+            raise ValidationError('Name is already taken')
 
 class AuthorForm(FlaskForm):
     id = HiddenField('id')
@@ -125,3 +129,6 @@ def add_User(username, password):
     u = User(username=username, password=m.hexdigest())
     db.session.add(u)
     db.session.commit()
+
+def check_username_free(username):
+    return len(User.query.filter(User.username==username).all())==0

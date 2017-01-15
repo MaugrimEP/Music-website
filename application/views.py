@@ -142,5 +142,5 @@ def register():
 		return redirect(url_for('home'))
 	return render_template(
 		'sign_up.html',
-		form=form
+		form=form,
 		)
