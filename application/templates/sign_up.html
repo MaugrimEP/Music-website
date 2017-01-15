@@ -1,0 +1,47 @@
+{% extends "base.html"%}
+{%block main%}
+<h1> Sign up </h1>
+<form role="form" method="POST" action="{{url_for('register')}}">
+  {{form.hidden_tag()}}
+  <div class="form-group"
+        {%if form.username.errors or form.password.errors or form.confirm.errors%}
+         "has-error"
+         {%endif%}>
+
+    {{form.username.label}}  {{form.username(size=50,class_="form-control")}}
+    {%if form.username.errors%}
+    <ul class="list-group">
+      {%for e in form.username.errors%}
+      <li class="list-group-item list-group-item-danger">{{e}}</li>
+      {%endfor%}
+    </ul>
+    {%endif%}
+
+    {{form.password.label}}  {{form.password(size=50,class_="form-control")}}
+    {%if form.password.errors%}
+    <ul class="list-group">
+      {%for e in form.password.errors%}
+      <li class="list-group-item list-group-item-danger">{{e}}</li>
+      {%endfor%}
+    </ul>
+    {%endif%}
+
+
+    {{form.confirm.label}}   {{form.confirm(size=50,class_="form-control")}}
+    {%if form.confirm.errors%}
+    <ul class="list-group">
+      {%for e in form.confirm.errors%}
+      <li class="list-group-item list-group-item-danger">{{e}}</li>
+      {%endfor%}
+    </ul>
+    {%endif%}
+  </div>
+
+
+  <input class="btn btn-default" type="submit" value="Enregistrer">
+</form>
+{%endblock%}
+
+{%block js%}
+curtab="sign_up-tab";
+{%endblock%}

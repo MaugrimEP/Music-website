@@ -78,3 +78,9 @@ def loaddb(filename):
                     calculetedClassification.add((idGenre,idMusic))
                     db.session.add(o)
     db.session.commit()
+
+
+@manager.command
+def syncdb():
+    '''creates the missing tables'''
+    db.create_all()

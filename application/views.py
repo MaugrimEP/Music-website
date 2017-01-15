@@ -122,3 +122,25 @@ def new_author():
 	"add_authors.html",
 	form=f,
 	)
+
+@app.route('/sign_up')
+def sign_up():
+	form = models.RegistrationForm()
+	return render_template(
+	"sign_up.html",
+	form = form
+	)
+
+@app.route('/register', methods=['POST'])
+def register():
+	user = None
+	form = models.RegistrationForm()
+	if form.validate_on_submit():
+		models.add_User(
+				username=form.username.data,
+				password=form.password.data,)
+		return redirect(url_for('home'))
+	return render_template(
+		'sign_up.html',
+		form=form
+		)

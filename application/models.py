@@ -4,6 +4,26 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, HiddenField
 from wtforms.validators import DataRequired
 
+from flask_login import UserMixin
+from wtforms import PasswordField
+from wtforms.validators import Length, EqualTo
+
+from hashlib import sha256
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50))
+    password = db.Column(db.String(64))
+
+    def get_id(self):
+        return self.id
+
+class RegistrationForm(FlaskForm):
+    id = HiddenField('id')
+    username = StringField('UserName', validators= [DataRequired(),Length(min=4, max=25)])
+    password = PasswordField('New Password', validators= [ DataRequired(), EqualTo('confirm', message='Passwords must match') ] )
+    confirm = PasswordField ('Repeat Password')
+
 class AuthorForm(FlaskForm):
     id = HiddenField('id')
     name = StringField('Nom', validators=[DataRequired()])
@@ -98,3 +118,10 @@ def authors_Autre():
     t=T+[l.lower() for l in T]
     opFilter=[~(Author.name.like(letter+"%")) for letter in t]
     return Author.trie(Author.query.filter(*opFilter))
+
+def add_User(username, password):
+    m = sha256()
+    m.update(password.encode())
+    u = User(username=username, password=m.hexdigest())
+    db.session.add(u)
+    db.session.commit()
