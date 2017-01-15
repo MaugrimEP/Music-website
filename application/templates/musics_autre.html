@@ -21,22 +21,19 @@
     </ul>
 
 
-    <p>
-      <ul>
-      {% for m in listeMusics %}
-      <li>
-      <a href="{{ url_for('music_by_id',id=m.id) }}">
-          {%if m.img%}
-            <img src="{{ url_for('static', filename='images/'+m.img) }}" />
-          {%endif%}
+    {% for m in listeMusics %}
+    <div class="col-xs-6 col-sm-3 col-md-2 music_img">
+    <a href="{{ url_for('music_by_id',id=m.id) }}">
+        {%if m.img%}
+          <img class="img-responsive" src="{{ url_for('static', filename='images/'+m.img) }}" />
+        {%else%}
+          <img class="img-responsive" src="{{ url_for('static', filename='not-found.png') }}" />
+        {%endif%}
+      {{m.title}}
+    </a></div>
+    {%endfor%}
 
 
-        {{m.title}}
-      </a>
-      </li>
-      {%endfor%}
-      </ul>
-    </p>
 {% endblock%}
 
 {%block js%}

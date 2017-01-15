@@ -4,3 +4,10 @@
   list-style: none;
   margin: 10px;
 }
+
+.music_img a
+{
+  height: 200px;
+  display: block;
+  overflow: hidden;
+}
