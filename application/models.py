@@ -36,6 +36,7 @@ def passwordDontMatch(form, fielfPW):
 class LoginForm(FlaskForm):
     username = StringField('Username', validators = [DataRequired(),userNotFound])
     password = PasswordField('Password', validators = [DataRequired(),passwordDontMatch])
+    next = HiddenField()
 
     def get_authenticated_user(self):
         user = User.query.get(self.username.data)

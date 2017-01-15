@@ -9,6 +9,8 @@ from flask_login import logout_user
 from flask_login import login_user, current_user
 from flask import request
 
+from flask_login import login_required
+
 tableau=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 
 @app.route("/")
@@ -81,6 +83,7 @@ def authors_autre():
 	)
 
 @app.route("/edit/author/<int:id>")
+@login_required
 def edit_authors(id):
 	a = models.author_by_id(id)
 	f = models.AuthorForm(id=a.id, name=a.name)
@@ -153,14 +156,17 @@ def register():
 @app.route("/login", methods=("GET","POST",))
 def login():
 	f = models.LoginForm()
-	if f.validate_on_submit():
+	if not f.validate_on_submit():
+		f.next.data = request.args.get("next")
+	elif f.validate_on_submit():
 		user = f.get_authenticated_user()
 		if user:
 			login_user(user)
-			return redirect(url_for("home"))
+			next = f.next.data or url_for("home")
+			return redirect(next)
 	return render_template(
 	"login.html",
-	form = f
+	form = f,
 	)
 
 @app.route("/logout")

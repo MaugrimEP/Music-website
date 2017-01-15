@@ -23,3 +23,5 @@ app.config['SECRET_KEY']="1b0145c0-080c-475a-a383-87a0dcc34d8b"
 
 from flask_login import LoginManager
 login_manager= LoginManager(app)
+
+login_manager.login_view = "login"
