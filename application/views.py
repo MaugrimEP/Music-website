@@ -90,23 +90,48 @@ def musics_autre(page=1):
 	listePages=[i for i in range(1,nbPage+1)],
 	)
 
-@app.route("/authors/<string:letter>")
-def authors_all(letter='A'):
+@app.route("/authors/<string:params>")
+def authors_all(params='A1'):
+
+	letter=params[0]
+	page=int(params[1:])-1
+	sizeSample=20
+
 	listeAuthors=models.authors_by_letter(letter)
+
+	fin=min(len(listeAuthors),page+sizeSample)
+	sample=[listeAuthors[i] for i in range(page,fin)]
+	nbPage=math.ceil(len(listeAuthors)/sizeSample)
+
 	return render_template(
 	"authors_all.html",
 	letter=letter,
-	listeAuthors=listeAuthors,
+	listeAuthors=sample,
 	tableau=tableau,
+	page=page+1,
+	nbPage=nbPage+1,
+	listePages=[i for i in range(1,nbPage+1)]
 	)
 
-@app.route("/authors/Autre")
-def authors_autre():
+@app.route("/authors/Autre/<int:page>")
+def authors_autre(page=1):
+
+	page=page-1
+	sizeSample=20
+
 	listeAuthors=models.authors_Autre()
+
+	fin=min(len(listeAuthors),page+sizeSample)
+	sample=[listeAuthors[i] for i in range(page,fin)]
+	nbPage=math.ceil(len(listeAuthors)/sizeSample)
+
 	return render_template(
 	"authors_autre.html",
-	listeAuthors=listeAuthors,
+	listeAuthors=sample,
 	tableau=tableau,
+	page=page+1,
+	nbPage=nbPage+1,
+	listePages=[i for i in range(1,nbPage+1)],
 	)
 
 @app.route("/edit/author/<int:id>")
