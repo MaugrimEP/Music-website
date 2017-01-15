@@ -68,7 +68,7 @@ class Author(db.Model):
 
     @staticmethod
     def getName(author):
-        return author.name
+        return author.name.lower()
 
     @staticmethod
     def trie(listeAuthors):
@@ -101,7 +101,7 @@ class Music(db.Model):
 
     @staticmethod
     def getTitle(music):
-        return music.title
+        return music.title.lower()
 
     @staticmethod
     def trie(listeMusics):
