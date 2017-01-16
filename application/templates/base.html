@@ -24,6 +24,7 @@
         <li id="musics_all-tab"><a href="{{url_for('musics_all',params="A0")}}">Toutes les musiques</a></li>
         <li id="authors_all-tab"><a href="{{url_for('authors_all',params="A0")}}">Tous les auteurs</a></li>
         <li id="add_authors-tab"><a href="{{url_for('add_authors')}}">Ajouter un auteur</a></li>
+        <li id="authorR-tab"><a href="{{url_for('authorR')}}">Rechercher un auteur</a></li>
         <li>
           <ul class="nav navbar-nav navbar-right">
             {%if current_user.is_authenticated%}

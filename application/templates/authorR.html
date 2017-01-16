@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{%block main%}
+
+  <h1>Rechercher un auteur</h1>
+
+  <form role="form" method="POST" action="{{url_for('author_search')}}">
+    <div class="form-group"
+          {%if form.name.errors %}
+           "has-error"
+           {%endif%}>
+
+      {{form.name.label}}  {{form.name(size=50,class_="form-control")}}
+      {%if form.name.errors%}
+      <ul class="list-group">
+        {%for e in form.name.errors%}
+        <li class="list-group-item list-group-item-danger">{{e}}</li>
+        {%endfor%}
+      </ul>
+      {%endif%}
+      </div>
+      <input class="btn btn-default" type="submit" value="Chercher">
+  </form>
+
+{%endblock%}
+{%block js%}
+curtab="authorR-tab";
+{%endblock%}

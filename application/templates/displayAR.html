@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{%block styles%}
+{{super()}}
+<link rel="stylesheet" href="{{ url_for('static',filename='displayAll.css') }}">
+{%endblock%}
+
+{%block main%}
+  <h1> Les auteurs comme : {{name}} </h1>
+
+    <p>
+      <ul>
+      {% for a in listeAuthors %}
+      <li>
+      <a href="{{ url_for('musics_by_author',id=a.id) }}">{{a.name}}</a>
+      </li>
+      {%endfor%}
+      </ul>
+    </p>
+{% endblock%}
+
+{%block js%}
+
+curtab="displayAR-tab";
+
+{%endblock%}

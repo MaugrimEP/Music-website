@@ -225,3 +225,30 @@ def login():
 def logout():
 	logout_user()
 	return redirect(url_for('home'))
+
+@app.route("/r/author")
+def authorR():
+	form = models.AuthorRForm()
+	return render_template(
+	"authorR.html",
+	form=form,
+	)
+
+@app.route("/redirect/authorR",  methods=("POST",))
+def author_search():
+	form = models.AuthorForm()
+	#if form.validate_on_submit():
+	return redirect(url_for('displayAR',name=form.name.data))
+	return render_template(
+	"authorR.html",
+	form = form,
+	)
+
+@app.route("/display/authorR/<string:name>")
+def displayAR(name):
+	listeAuthors = models.getAuthorsFromNames(name)
+	return render_template(
+	"displayAR.html",
+	listeAuthors=listeAuthors,
+	name=name,
+	)

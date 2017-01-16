@@ -32,7 +32,8 @@ def passwordDontMatch(form, fielfPW):
         if passwd != user.password:
             raise ValidationError('Wrong Password')
 
-
+class AuthorRForm(FlaskForm):
+    name = StringField('Author name', validators=[ DataRequired()])
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators = [DataRequired(),userNotFound])
@@ -171,3 +172,7 @@ def getMusicsFromAuthor(id):
 
 def getMusicsFromParent(id):
     return Music.query.filter(Music.parent==id).all()
+
+def getAuthorsFromNames(name):
+    opFilter=[Author.name.like(name.lower()+"%")|Author.name.like(name.upper()+"%")]
+    return Author.trie(Author.query.filter(*opFilter).all())
