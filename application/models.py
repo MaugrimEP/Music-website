@@ -33,6 +33,7 @@ def passwordDontMatch(form, fielfPW):
             raise ValidationError('Wrong Password')
 
 
+
 class LoginForm(FlaskForm):
     username = StringField('Username', validators = [DataRequired(),userNotFound])
     password = PasswordField('Password', validators = [DataRequired(),passwordDontMatch])

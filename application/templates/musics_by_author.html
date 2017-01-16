@@ -1,42 +1,48 @@
 {% extends "base.html" %}
+
+{%block styles%}
+{{super()}}
+<link rel="stylesheet" href="{{ url_for('static',filename='displayAll.css') }}">
+{%endblock%}
+
 {%block main%}
     <h1>{{author.name}}</h1>
     <a href="{{url_for('edit_authors',id=author.id)}}">Edit name</a>
 
     {%if listeBy|length!=0%}
     <h2> Musics enregistrées </h2>
-    <ul>
+
+    <div class="row">
     {%for music in listeBy%}
-    <li>
-      <ul>
-        <a href="{{ url_for('music_by_id',id=music.id) }}" >
-        <li>{{music.title}}</li>
+
+    <div class="col-xs-6 col-sm-3 col-md-2 music_img">
+    <a href="{{ url_for('music_by_id',id=music.id) }}">
         {%if music.img%}
-        <li><img src="{{ url_for('static', filename='images/'+music.img) }}" /></li>
+          <img src="{{ url_for('static', filename='images/'+music.img) }}" />
+        {%else%}
+          <img class="img-responsive" src="{{ url_for('static', filename='not-found.png') }}" />
         {%endif%}
-        </a>
-      </ul>
-    </li>
+      {{music.title}}
+    </a></div>
     {%endfor%}
-    </ul>
+  </div>
     {%endif%}
 
     {%if listeParent|length!=0%}
     <h2> Musics écrites </h2>
-    <ul>
+    <div class="row">
     {%for music in listeParent%}
-    <li>
-      <ul>
-        <a href="{{ url_for('music_by_id',id=music.id) }}" >
-        <li>{{music.title}}</li>
+    <div class="col-xs-6 col-sm-3 col-md-2 music_img">
+    <a href="{{ url_for('music_by_id',id=music.id) }}">
         {%if music.img%}
-        <li><img src="{{ url_for('static', filename='images/'+music.img) }}" /></li>
+          <img src="{{ url_for('static', filename='images/'+music.img) }}" />
+        {%else%}
+          <img class="img-responsive" src="{{ url_for('static', filename='not-found.png') }}" />
         {%endif%}
-        </a>
-      </ul>
-    </li>
+      {{music.title}}
+    </a></div>
     {%endfor%}
-    </ul>
+  </div>
     {%endif%}
 
 {% endblock%}
