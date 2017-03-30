@@ -98,6 +98,18 @@ class Classification(db.Model):
     genre = db.relationship("Music",
         backref=db.backref("genres",lazy="dynamic"))
 
+class Commentaire(db.Model):
+    id=db.Column(db.Integer,primary_key=True)
+    idFilm=db.Column(db.Integer,db.ForeignKey("music.id"))
+
+    #now the backref to get all the commentaires for one specific music
+    commentaires = db.relationship("Music",
+        backref=db.backref("commentaires",lazy="dynamic"))
+
+    username=db.Column(db.String(50),db.ForeignKey("user.username"))
+    texte=db.Column(db.Text)
+
+
 
 class Music(db.Model):
 
