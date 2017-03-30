@@ -16,11 +16,144 @@
         <li>{{genre.genre}}</li>
         {%endfor%}
         </ul>
-    </li>
+      </li>
     </ul>
+
+
+    <div id="DivDesCommentaires">
+      <ul id="listeCommentaire">
+
+      </ul>
+    </div>
+
+    <div id="divAjoutCommentaire">
+      <textarea id="texteCommentaire" rows="4" cols="50">Type your comment</textarea>
+      <button id="sendCommentaire">Envoyer</button>
+    </div>
+
+    <script type=text/javascript>$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};</script>
 {% endblock%}
 {%block js%}
 
 curtab="music_by_id-tab";
 
+function getCommentaireData()
+{
+  let commentaire = {};
+  commentaire.musicId={{music.id}};
+  commentaire.username = `{{current_user.username}}`;
+  commentaire.texte = $("#texteCommentaire").val();
+
+  return commentaire;
+}
+
+function sendCommentaire(commentaire)
+{
+  $.ajax({
+    type:'POST',
+    dataType:'json',
+    url: $SCRIPT_ROOT + '/saveCommentaire',
+    data:JSON.stringify(commentaire),
+    complete:function(retour){
+      majListCommentaire();
+    }
+  });
+}
+
+$("#sendCommentaire").click(function()
+{
+  let commentaire = getCommentaireData();
+  sendCommentaire(commentaire);
+
+});
+
+function afficheCommentaires(commentaires)
+{
+
+  $("#listeCommentaire").empty()
+
+  for(let i=0;i<commentaires.length;++i)
+  {
+    let commentaire = commentaires[i];
+
+    let ULCom = document.createElement("UL");
+    document.getElementById("listeCommentaire").appendChild(ULCom);
+
+
+    for(let attribut in commentaire)
+    {
+      let liAttribut = document.createElement("li");
+      let text="";
+      if(attribut=="id" || attribut=="idFilm")
+      {
+        text = commentaire[attribut];
+        liAttribut.style.display = (attribut=="id" || attribut=="idFilm" )? "none":"";
+      }
+      else
+      {
+        text = attribut+" : "+commentaire[attribut];
+      }
+      liAttribut.appendChild(document.createTextNode(text));
+      liAttribut.className=attribut;
+
+      ULCom.appendChild(liAttribut);
+    }
+
+    let buttonSupprimerCom = document.createElement("button");
+    buttonSupprimerCom.appendChild(document.createTextNode("supprimer"));
+    buttonSupprimerCom.classList.add('buttonSupprimer');
+    buttonSupprimerCom.id=`buttonSupprimer${i}`;
+    buttonSupprimerCom.addEventListener('click', supprimerCom, false);
+    ULCom.appendChild(buttonSupprimerCom);
+
+  }
+}
+
+function majListCommentaire()
+{
+  let informations = {};
+  informations.idMusic={{music.id}};
+
+  let commentaires;
+
+  $.ajax({
+    type:'GET',
+    dataType:'json',
+    url:$SCRIPT_ROOT + '/getListCommentaires',
+    data:informations,
+    complete:function(retour){
+      commentaires = retour.responseJSON;
+      afficheCommentaires(commentaires);
+    }
+  });
+
+}
+
+function supprimerCom(e)
+{
+  let button = e.target;
+  let ULParent = button.parentNode;
+
+  let idCommentaire = ULParent.getElementsByClassName("id")[0].innerHTML;
+  supprimerInDB(idCommentaire);
+}
+
+
+function supprimerInDB(idCommentaire)
+{
+
+  informations = {"id":idCommentaire};
+
+  $.ajax({
+    type:'POST',
+    dataType:'json',
+    url:$SCRIPT_ROOT + '/supprimerCommentaire',
+    data:JSON.stringify(informations),
+    complete:function(retour){
+      majListCommentaire();
+    }
+  });
+}
+
+majListCommentaire();
 {%endblock%}

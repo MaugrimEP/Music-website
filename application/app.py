@@ -25,3 +25,6 @@ from flask_login import LoginManager
 login_manager= LoginManager(app)
 
 login_manager.login_view = "login"
+
+from flask_json import FlaskJSON
+json = FlaskJSON(app)

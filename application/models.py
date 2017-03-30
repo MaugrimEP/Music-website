@@ -188,3 +188,18 @@ def getMusicsFromParent(id):
 def getAuthorsFromNames(name):
     opFilter=[Author.name.like(name.lower()+"%")|Author.name.like(name.upper()+"%")]
     return Author.trie(Author.query.filter(*opFilter).all())
+
+def getCommentairesFromIdMusic(idMusic):
+    music = Music.query.get(idMusic)
+    commentaires = []
+    for commentaire in music.commentaires:
+        commentaires+=[{
+                        "id":commentaire.id,
+                        "idFilm":commentaire.idFilm,
+                        "username":commentaire.username,
+                        "texte":commentaire.texte,
+                      }]
+    return commentaires
+
+def getCommentaireById(id):
+    return Commentaire.query.get(id)
