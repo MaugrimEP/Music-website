@@ -249,6 +249,7 @@ def displayAR(name):
 	)
 
 @app.route("/saveCommentaire",methods=['POST'])
+@login_required
 def saveCommentaire():
 	commentaire = request.get_json(force=True)
 	idFilm = commentaire["musicId"]
@@ -266,6 +267,7 @@ def getListCommentaires():
 	return jsonify(commentaires)
 
 @app.route("/supprimerCommentaire", methods=['GET','POST'])
+@login_required
 def supprimerCommentaire():
 	ressource = request.get_json(force=True)
 	idCom = ressource["id"]

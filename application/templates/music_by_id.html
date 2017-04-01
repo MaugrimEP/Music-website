@@ -56,6 +56,7 @@ function sendCommentaire(commentaire)
     data:JSON.stringify(commentaire),
     complete:function(retour){
       majListCommentaire();
+      $("#texteCommentaire").val();
     }
   });
 }
@@ -98,13 +99,16 @@ function afficheCommentaires(commentaires)
 
       ULCom.appendChild(liAttribut);
     }
+    if(commentaire["username"]=="{{current_user.username}}")
+    {
+      let buttonSupprimerCom = document.createElement("button");
+      buttonSupprimerCom.appendChild(document.createTextNode("supprimer"));
+      buttonSupprimerCom.classList.add('buttonSupprimer');
+      buttonSupprimerCom.id=`buttonSupprimer${i}`;
+      buttonSupprimerCom.addEventListener('click', supprimerCom, false);
+      ULCom.appendChild(buttonSupprimerCom);
+    }
 
-    let buttonSupprimerCom = document.createElement("button");
-    buttonSupprimerCom.appendChild(document.createTextNode("supprimer"));
-    buttonSupprimerCom.classList.add('buttonSupprimer');
-    buttonSupprimerCom.id=`buttonSupprimer${i}`;
-    buttonSupprimerCom.addEventListener('click', supprimerCom, false);
-    ULCom.appendChild(buttonSupprimerCom);
 
   }
 }
