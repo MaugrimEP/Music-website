@@ -1,15 +1,10 @@
 #! /usr/bin/env python3
 from .app import app, db
-from flask import render_template
-from flask import url_for, redirect
+from flask import Flask, render_template, url_for, redirect, request, jsonify
 from application import models
 
-from flask_login import logout_user
-
-from flask_login import login_user, current_user
-from flask import request
-
-from flask_login import login_required
+from flask_login import logout_user, login_user, current_user, login_required
+from flask_json import FlaskJSON, JsonError, json_response, as_json
 
 import math
 
@@ -252,3 +247,41 @@ def displayAR(name):
 	listeAuthors=listeAuthors,
 	name=name,
 	)
+
+@app.route("/saveCommentaire",methods=['POST'])
+@login_required
+def saveCommentaire():
+	commentaire = request.get_json(force=True)
+	idFilm = commentaire["musicId"]
+	username = commentaire["username"]
+	texte = commentaire["texte"]
+	dbCommentaire = models.Commentaire(idFilm=idFilm,username=username,texte=texte)
+	db.session.add(dbCommentaire)
+	db.session.commit()
+	return jsonify(commentaire)
+
+@app.route("/getListCommentaires", methods=['GET','POST'])
+def getListCommentaires():
+	idMusic = request.args.get("idMusic")
+	commentaires = models.getCommentairesFromIdMusic(idMusic)
+	return jsonify(commentaires)
+
+@app.route("/supprimerCommentaire", methods=['GET','POST'])
+@login_required
+def supprimerCommentaire():
+	ressource = request.get_json(force=True)
+	idCom = ressource["id"]
+	DBCom = models.getCommentaireById(idCom)
+	db.session.delete(DBCom)
+	db.session.commit()
+	return jsonify(idCom)
+
+@app.route("/editerCommentaire", methods=['GET','POST'])
+def editierCommentaire():
+	ressource = request.get_json(force=True);
+	idCom = ressource["id"]
+	newText = ressource["text"]
+	dbCommentaire = models.getCommentaireById(idCom)
+	dbCommentaire.texte=newText
+	db.session.commit()
+	return jsonify(ressource)

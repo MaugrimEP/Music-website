@@ -98,6 +98,18 @@ class Classification(db.Model):
     genre = db.relationship("Music",
         backref=db.backref("genres",lazy="dynamic"))
 
+class Commentaire(db.Model):
+    id=db.Column(db.Integer,primary_key=True)
+    idFilm=db.Column(db.Integer,db.ForeignKey("music.id"))
+
+    #now the backref to get all the commentaires for one specific music
+    commentaires = db.relationship("Music",
+        backref=db.backref("commentaires",lazy="dynamic"))
+
+    username=db.Column(db.String(50),db.ForeignKey("user.username"))
+    texte=db.Column(db.Text)
+
+
 
 class Music(db.Model):
 
@@ -176,3 +188,18 @@ def getMusicsFromParent(id):
 def getAuthorsFromNames(name):
     opFilter=[Author.name.like(name.lower()+"%")|Author.name.like(name.upper()+"%")]
     return Author.trie(Author.query.filter(*opFilter).all())
+
+def getCommentairesFromIdMusic(idMusic):
+    music = Music.query.get(idMusic)
+    commentaires = []
+    for commentaire in music.commentaires:
+        commentaires+=[{
+                        "id":commentaire.id,
+                        "idFilm":commentaire.idFilm,
+                        "username":commentaire.username,
+                        "texte":commentaire.texte,
+                      }]
+    return commentaires
+
+def getCommentaireById(id):
+    return Commentaire.query.get(id)

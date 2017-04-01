@@ -16,11 +16,223 @@
         <li>{{genre.genre}}</li>
         {%endfor%}
         </ul>
-    </li>
+      </li>
     </ul>
+
+    <div class="row">
+      <div class="col-md-6" id="DivDesCommentaires">
+        <ul id="listeCommentaire">
+
+        </ul>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+                <div class="panel-body">
+                        <div class="form-group">
+                            <label for="texteCommentaire">Commentaire</label>
+                            <textarea class="form-control" id="texteCommentaire" placeholder="Ecrire votre commentaire" required></textarea>
+                        </div>
+                        <div class="text-right">
+                            <button id="sendCommentaire" class="btn btn-default">Envoyer</button>
+                        </div>
+                </div>
+    </div>
+
+    <script type=text/javascript>$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};</script>
 {% endblock%}
 {%block js%}
 
 curtab="music_by_id-tab";
 
+function getCommentaireData()
+{
+  let commentaire = {};
+  commentaire.musicId={{music.id}};
+  commentaire.username = `{{current_user.username}}`;
+  commentaire.texte = $("#texteCommentaire").val();
+
+  return commentaire;
+}
+
+function sendCommentaire(commentaire)
+{
+  $.ajax({
+    type:'POST',
+    dataType:'json',
+    url: $SCRIPT_ROOT + '/saveCommentaire',
+    data:JSON.stringify(commentaire),
+    complete:function(retour){
+      majListCommentaire();
+      $("#texteCommentaire").val('');
+    }
+  });
+}
+
+$("#sendCommentaire").click(function()
+{
+  let commentaire = getCommentaireData();
+  sendCommentaire(commentaire);
+
+});
+
+function afficheCommentaires(commentaires)
+{
+
+  $("#listeCommentaire").empty()
+
+  for(let i=0;i<commentaires.length;++i)
+  {
+    let commentaire = commentaires[i];
+
+    let ULCom = document.createElement("UL");
+    ULCom.classList.add('well','list-unstyled');
+    ULCom.id="ULCommentaire"+commentaire["id"];
+    document.getElementById("listeCommentaire").appendChild(ULCom);
+
+
+    for(let attribut in commentaire)
+    {
+      let liAttribut = document.createElement("li");
+      if(attribut=="id" || attribut=="idFilm")
+      {
+
+        let text = commentaire[attribut];
+        liAttribut.style.display = (attribut=="id" || attribut=="idFilm" )? "none":"";
+        liAttribut.appendChild(document.createTextNode(text));
+      }
+      else
+      {
+        let spanAttribut = document.createElement("span");
+        spanAttribut.appendChild(document.createTextNode(attribut+" : "));
+        spanAttribut.id="spanAttribut"+commentaire["id"];
+
+        let spanValueAttribut = document.createElement("span");
+        spanValueAttribut.appendChild(document.createTextNode(commentaire[attribut]));
+        spanValueAttribut.id="spanValueAttribut"+commentaire["id"];
+
+
+        liAttribut.appendChild(spanAttribut);
+        liAttribut.appendChild(spanValueAttribut);
+      }
+      liAttribut.className=attribut;
+      liAttribut.id=attribut+commentaire["id"];
+
+      ULCom.appendChild(liAttribut);
+    }
+    if(commentaire["username"]=="{{current_user.username}}")
+    {
+      let buttonSupprimerCom = document.createElement("button");
+      buttonSupprimerCom.appendChild(document.createTextNode("supprimer"));
+      buttonSupprimerCom.classList.add('buttonSupprimer','btn','btn-danger');
+      buttonSupprimerCom.id=`buttonSupprimer${i}`;
+      buttonSupprimerCom.addEventListener('click', supprimerCom, false);
+      ULCom.appendChild(buttonSupprimerCom);
+
+      let buttonEditionCom = document.createElement("button");
+      buttonEditionCom.appendChild(document.createTextNode("editer"));
+      buttonEditionCom.classList.add("buttonEditer",'btn','btn-primary');
+      buttonEditionCom.id=`buttonEditer${i}`;
+      buttonEditionCom.addEventListener('click',editerCom, false);
+      ULCom.appendChild(buttonEditionCom);
+    }
+  }
+}
+
+function majListCommentaire()
+{
+  let informations = {};
+  informations.idMusic={{music.id}};
+
+  let commentaires;
+
+  $.ajax({
+    type:'GET',
+    dataType:'json',
+    url:$SCRIPT_ROOT + '/getListCommentaires',
+    data:informations,
+    complete:function(retour){
+      commentaires = retour.responseJSON;
+      afficheCommentaires(commentaires);
+    }
+  });
+
+}
+
+function supprimerCom(e)
+{
+  let button = e.target;
+  let ULParent = button.parentNode;
+
+  let idCommentaire = ULParent.getElementsByClassName("id")[0].innerHTML;
+  supprimerInDB(idCommentaire);
+}
+
+function editerCom(e)
+{
+  let button = e.target;
+  let ULParent = button.parentNode;
+  let idCommentaire = ULParent.getElementsByClassName("id")[0].innerHTML;
+
+  let interface = getInterfaceEdition(idCommentaire);
+  document.getElementById("ULCommentaire"+idCommentaire).appendChild(interface);
+
+  button.style.display = "none";
+
+}
+
+function getInterfaceEdition(idCommentaire)
+{
+  function envoyerEdition(e)
+  {
+    let informations = {};
+    informations.id=idCommentaire;
+    informations.text=$("#textEdition"+idCommentaire).val();
+
+    $.ajax({
+      type:'POST',
+      dataType:'json',
+      url:$SCRIPT_ROOT + '/editerCommentaire',
+      data:JSON.stringify(informations),
+      complete:function(retour){
+        majListCommentaire();
+      }
+    });
+  }
+
+  let ULConteneur = document.createElement("UL");
+  let textArea = document.createElement("textarea");
+  ULConteneur.appendChild(textArea);
+  textArea.row="4";
+  textArea.cols="50";
+  textArea.id="textEdition"+idCommentaire;
+  textArea.placeholder="Type your comment";
+  textArea.appendChild(document.createTextNode($("#spanValueAttribut"+idCommentaire).html()));
+
+  let buttonSubmit = document.createElement("button");
+  ULConteneur.appendChild(buttonSubmit);
+  buttonSubmit.id="buttonEdition"+idCommentaire;
+  buttonSubmit.appendChild(document.createTextNode("envoyer les modifs"));
+  buttonSubmit.addEventListener('click',envoyerEdition, false);
+
+  return ULConteneur;
+}
+
+function supprimerInDB(idCommentaire)
+{
+
+  informations = {"id":idCommentaire};
+
+  $.ajax({
+    type:'POST',
+    dataType:'json',
+    url:$SCRIPT_ROOT + '/supprimerCommentaire',
+    data:JSON.stringify(informations),
+    complete:function(retour){
+      majListCommentaire();
+    }
+  });
+}
+
+majListCommentaire();
 {%endblock%}
