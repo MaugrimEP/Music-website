@@ -27,7 +27,7 @@
     </div>
 
     <div id="divAjoutCommentaire">
-      <textarea id="texteCommentaire" rows="4" cols="50">Type your comment</textarea>
+      <textarea id="texteCommentaire" rows="4" cols="50" placeholder="Type your comment"></textarea>
       <button id="sendCommentaire">Envoyer</button>
     </div>
 
@@ -56,7 +56,7 @@ function sendCommentaire(commentaire)
     data:JSON.stringify(commentaire),
     complete:function(retour){
       majListCommentaire();
-      $("#texteCommentaire").val();
+      $("#texteCommentaire").val('');
     }
   });
 }
@@ -78,24 +78,36 @@ function afficheCommentaires(commentaires)
     let commentaire = commentaires[i];
 
     let ULCom = document.createElement("UL");
+    ULCom.id="ULCommentaire"+commentaire["id"];
     document.getElementById("listeCommentaire").appendChild(ULCom);
 
 
     for(let attribut in commentaire)
     {
       let liAttribut = document.createElement("li");
-      let text="";
       if(attribut=="id" || attribut=="idFilm")
       {
-        text = commentaire[attribut];
+
+        let text = commentaire[attribut];
         liAttribut.style.display = (attribut=="id" || attribut=="idFilm" )? "none":"";
+        liAttribut.appendChild(document.createTextNode(text));
       }
       else
       {
-        text = attribut+" : "+commentaire[attribut];
+        let spanAttribut = document.createElement("span");
+        spanAttribut.appendChild(document.createTextNode(attribut+" : "));
+        spanAttribut.id="spanAttribut"+commentaire["id"];
+
+        let spanValueAttribut = document.createElement("span");
+        spanValueAttribut.appendChild(document.createTextNode(commentaire[attribut]));
+        spanValueAttribut.id="spanValueAttribut"+commentaire["id"];
+
+
+        liAttribut.appendChild(spanAttribut);
+        liAttribut.appendChild(spanValueAttribut);
       }
-      liAttribut.appendChild(document.createTextNode(text));
       liAttribut.className=attribut;
+      liAttribut.id=attribut+commentaire["id"];
 
       ULCom.appendChild(liAttribut);
     }
@@ -107,9 +119,14 @@ function afficheCommentaires(commentaires)
       buttonSupprimerCom.id=`buttonSupprimer${i}`;
       buttonSupprimerCom.addEventListener('click', supprimerCom, false);
       ULCom.appendChild(buttonSupprimerCom);
+
+      let buttonEditionCom = document.createElement("button");
+      buttonEditionCom.appendChild(document.createTextNode("editer"));
+      buttonEditionCom.classList.add("buttonEditer");
+      buttonEditionCom.id=`buttonEditer${i}`;
+      buttonEditionCom.addEventListener('click',editerCom, false);
+      ULCom.appendChild(buttonEditionCom);
     }
-
-
   }
 }
 
@@ -142,6 +159,59 @@ function supprimerCom(e)
   supprimerInDB(idCommentaire);
 }
 
+function editerCom(e)
+{
+  let button = e.target;
+  let ULParent = button.parentNode;
+  let idCommentaire = ULParent.getElementsByClassName("id")[0].innerHTML;
+
+  let interface = getInterfaceEdition(idCommentaire);
+  document.getElementById("ULCommentaire"+idCommentaire).appendChild(interface);
+
+  button.style.display = "none";
+
+}
+
+function getInterfaceEdition(idCommentaire)
+{
+
+  function envoyerEdition(e)
+  {
+
+    let informations = {};
+    informations.id=idCommentaire;
+    informations.text=$("#textEdition"+idCommentaire).val();
+
+    $.ajax({
+      type:'POST',
+      dataType:'json',
+      url:$SCRIPT_ROOT + '/editerCommentaire',
+      data:JSON.stringify(informations),
+      complete:function(retour){
+        majListCommentaire();
+      }
+    });
+  }
+
+  let ULConteneur = document.createElement("UL");
+  let textArea = document.createElement("textarea");
+  ULConteneur.appendChild(textArea);
+  textArea.row="4";
+  textArea.cols="50";
+  textArea.id="textEdition"+idCommentaire;
+  textArea.placeholder="Type your comment";
+  textArea.appendChild(document.createTextNode($("#spanValueAttribut"+idCommentaire).html()));
+
+  let buttonSubmit = document.createElement("button");
+  ULConteneur.appendChild(buttonSubmit);
+  buttonSubmit.id="buttonEdition"+idCommentaire;
+  buttonSubmit.appendChild(document.createTextNode("envoyer les modifs"));
+  buttonSubmit.addEventListener('click',envoyerEdition, false);
+
+  return ULConteneur;
+
+
+}
 
 function supprimerInDB(idCommentaire)
 {

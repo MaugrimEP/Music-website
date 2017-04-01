@@ -275,3 +275,13 @@ def supprimerCommentaire():
 	db.session.delete(DBCom)
 	db.session.commit()
 	return jsonify(idCom)
+
+@app.route("/editerCommentaire", methods=['GET','POST'])
+def editierCommentaire():
+	ressource = request.get_json(force=True);
+	idCom = ressource["id"]
+	newText = ressource["text"]
+	dbCommentaire = models.getCommentaireById(idCom)
+	dbCommentaire.texte=newText
+	db.session.commit()
+	return jsonify(ressource)
