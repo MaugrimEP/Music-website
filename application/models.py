@@ -109,6 +109,8 @@ class Commentaire(db.Model):
     username=db.Column(db.String(50),db.ForeignKey("user.username"))
     texte=db.Column(db.Text)
 
+    items = db.relationship("Reponse", cascade="all, delete-orphan")
+
 
 
 class Music(db.Model):
@@ -136,6 +138,17 @@ class Music(db.Model):
 
     def __repr__(self):
         return "<Music (%d) %s>" % (self.id,self.title)
+
+class Reponse(db.Model):
+    id=db.Column(db.Integer,primary_key=True)
+    idCom=db.Column(db.Integer,db.ForeignKey("commentaire.id"))
+
+    reponses = db.relationship("Commentaire",
+        backref=db.backref("reponses",lazy="dynamic"))
+
+    username=db.Column(db.String(50),db.ForeignKey("user.username"))
+    texte=db.Column(db.Text)
+
 
 def getSimpleSample(SizeSample):
     return Music.query.limit(SizeSample).all()
@@ -198,8 +211,49 @@ def getCommentairesFromIdMusic(idMusic):
                         "idFilm":commentaire.idFilm,
                         "username":commentaire.username,
                         "texte":commentaire.texte,
+                        "reponses":getReponsesByCom(commentaire.id)
                       }]
+    for commentaire in commentaires:
+        print("id :",commentaire["id"])
+        print("idFilm :",commentaire["idFilm"])
+        print("username :",commentaire["username"])
+        print("texte :",commentaire["texte"])
+        for reponse in commentaire["reponses"]:
+            print(reponse)
     return commentaires
+
+def getReponsesByCom(idCom):
+    reponses = []
+    commentaire = Commentaire.query.get(idCom)
+    for reponse in commentaire.reponses:
+        reponses+=[{
+                    "idR":reponse.id,
+                    "idCom":reponse.idCom,
+                    "username":reponse.username,
+                    "texte":reponse.texte
+                    }]
+    return reponses
 
 def getCommentaireById(id):
     return Commentaire.query.get(id)
+
+def getReponseById(id):
+    return Reponse.query.get(id)
+
+def getReponsesFromIdCom(idCom):
+    com = Commentaire.query.get(idCom)
+    reponses = {}
+    reponses["idCom"]=idCom;
+    reponses["lesReponses"]=[]
+    for reponse in com.reponses:
+        reponses["lesReponses"]+=[{
+                        "id":reponse.id,
+                        "username":reponse.username,
+                        "texte":reponse.texte,
+                      }]
+    return reponses
+def deleteReponse(idCom):
+    lesReponses = getCommentaireById(idCom).reponses
+    for reponse in lesReponses:
+        db.session.delete(reponse)
+        db.session.commit()
