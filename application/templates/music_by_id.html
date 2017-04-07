@@ -161,6 +161,7 @@ function afficheCommentaires(commentaires)
       let reponse = lesReponses[j];
 
       let ULReponse = document.createElement("UL");
+      ULReponse.id=`ULReponse${reponse['idR']}`;
       ULReponses.appendChild(ULReponse);
 
       let liIDR = document.createElement("li");
@@ -173,7 +174,7 @@ function afficheCommentaires(commentaires)
       let liIDCom = document.createElement("li");
       liIDCom.style.display = "none";
       liIDCom.appendChild(document.createTextNode(reponse["idCom"]));
-      liIDCom.id=`RidCom${reponse["idCom"]}`;
+      liIDCom.id=`RidCom${reponse["idR"]}`;
       ULReponse.appendChild(liIDCom);
 
       let RliUsername = document.createElement("li");
@@ -183,17 +184,17 @@ function afficheCommentaires(commentaires)
       RspanValueUsername.appendChild(document.createTextNode(reponse["username"])),
       RliUsername.appendChild(RspanUsername);
       RliUsername.appendChild(RspanValueUsername);
-      RliUsername.id="Rusername"+reponse["username"];
+      RliUsername.id="Rusername"+reponse["idR"];
       ULReponse.appendChild(RliUsername);
 
       let RliText = document.createElement("li");
       let RspanText = document.createElement("span");
       RspanText.appendChild(document.createTextNode("texte :"));
       let RspanValueText = document.createElement("span");
+      RspanValueText.id="Rtexte"+reponse["idR"];
       RspanValueText.appendChild(document.createTextNode(reponse["texte"])),
       RliText.appendChild(RspanText);
       RliText.appendChild(RspanValueText);
-      RliText.id="Rtexte"+reponse["texte"];
       ULReponse.appendChild(RliText);
 
       if(commentaire["username"]=="{{current_user.username}}")
@@ -201,15 +202,15 @@ function afficheCommentaires(commentaires)
         let buttonSupprimerRep = document.createElement("button");
         buttonSupprimerRep.appendChild(document.createTextNode("supprimer"));
         buttonSupprimerRep.classList.add('buttonSupprimer','btn','btn-danger');
-        buttonSupprimerRep.id=`buttonSupprimerRep${i}`;
+        buttonSupprimerRep.id=`buttonSupprimerRep${reponse["idR"]}`;
         buttonSupprimerRep.addEventListener('click', supprimerRep, false);
         ULReponse.appendChild(buttonSupprimerRep);
 
         let buttonEditionRep = document.createElement("button");
         buttonEditionRep.appendChild(document.createTextNode("editer"));
         buttonEditionRep.classList.add("buttonEditer",'btn','btn-primary');
-        buttonEditionRep.id=`buttonEditerR${i}`;
-        //buttonEditionRep.addEventListener('click',editerRep, false);
+        buttonEditionRep.id=`buttonEditerR${reponse["idR"]}`;
+        buttonEditionRep.addEventListener('click',editerRep, false);
         ULReponse.appendChild(buttonEditionRep);
       }
 
@@ -219,19 +220,55 @@ function afficheCommentaires(commentaires)
 }
 
 
-/*function editerRep(e)
+function editerRep(e)
 {
   let button = e.target;
   let ULParent = button.parentNode;
   let idReponse = ULParent.getElementsByClassName("Rid")[0].innerHTML;
 
-  let interface = getInterfaceEdition(idReponse);
-  document.getElementById("ULCommentaire"+idCommentaire).appendChild(interface);
+  let interface = getInterfaceEditionReponse(idReponse);
+  document.getElementById("ULReponse"+idReponse).appendChild(interface);
 
   button.style.display = "none";
 
-}*/
+}
 
+function getInterfaceEditionReponse(idReponse)
+{
+  function envoyerEdition(e)
+  {
+    let informations = {};
+    informations.id=idReponse;
+    informations.text=$("#textEditionReponse"+idReponse).val();
+
+    $.ajax({
+      type:'POST',
+      dataType:'json',
+      url:$SCRIPT_ROOT + '/editerReponse',
+      data:JSON.stringify(informations),
+      complete:function(retour){
+        majListCommentaire();
+      }
+    });
+  }
+
+  let ULConteneur = document.createElement("UL");
+  let textArea = document.createElement("textarea");
+  ULConteneur.appendChild(textArea);
+  textArea.row="4";
+  textArea.cols="50";
+  textArea.id="textEditionReponse"+idReponse;
+  textArea.placeholder="Type your reponse";
+  textArea.appendChild(document.createTextNode($("#Rtexte"+idReponse).html()));
+
+  let buttonSubmit = document.createElement("button");
+  ULConteneur.appendChild(buttonSubmit);
+  buttonSubmit.id="buttonEditionReponse"+idReponse;
+  buttonSubmit.appendChild(document.createTextNode("envoyer les modifs"));
+  buttonSubmit.addEventListener('click',envoyerEdition, false);
+
+  return ULConteneur;
+}
 
 
 function supprimerRep(e)

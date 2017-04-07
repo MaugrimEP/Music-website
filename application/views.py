@@ -309,14 +309,14 @@ def supprimerReponse():
 	db.session.delete(DBRep)
 	db.session.commit()
 	return jsonify(idRep)
-#
-# @app.route("/editerCommentaire", methods=['GET','POST'])
-# @login_required
-# def editierCommentaire():
-# 	ressource = request.get_json(force=True);
-# 	idCom = ressource["id"]
-# 	newText = ressource["text"]
-# 	dbCommentaire = models.getCommentaireById(idCom)
-# 	dbCommentaire.texte=newText
-# 	db.session.commit()
-# 	return jsonify(ressource)
+
+@app.route("/editerReponse", methods=['GET','POST'])
+@login_required
+def editerReponse():
+	ressource = request.get_json(force=True);
+	idRep = ressource["id"]
+	newText = ressource["text"]
+	dbReponse = models.getReponseById(idRep)
+	dbReponse.texte=newText
+	db.session.commit()
+	return jsonify(ressource)

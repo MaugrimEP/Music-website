@@ -213,13 +213,6 @@ def getCommentairesFromIdMusic(idMusic):
                         "texte":commentaire.texte,
                         "reponses":getReponsesByCom(commentaire.id)
                       }]
-    for commentaire in commentaires:
-        print("id :",commentaire["id"])
-        print("idFilm :",commentaire["idFilm"])
-        print("username :",commentaire["username"])
-        print("texte :",commentaire["texte"])
-        for reponse in commentaire["reponses"]:
-            print(reponse)
     return commentaires
 
 def getReponsesByCom(idCom):
