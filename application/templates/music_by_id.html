@@ -71,9 +71,15 @@ function sendCommentaire(commentaire)
 
 $("#sendCommentaire").click(function()
 {
-  let commentaire = getCommentaireData();
-  sendCommentaire(commentaire);
-
+  if("{{current_user.username}}"=="")
+  {
+    alert("Il faut se connecter");
+  }
+  else
+  {
+    let commentaire = getCommentaireData();
+    sendCommentaire(commentaire);
+  }
 });
 
 function afficheCommentaires(commentaires)
@@ -146,9 +152,21 @@ function afficheCommentaires(commentaires)
 
     let buttonRepondre = document.createElement("button");
     buttonRepondre.appendChild(document.createTextNode("repondre"));
-    buttonRepondre.classList.add('buttonRepondre','btn','btn-info');
+    buttonRepondre.classList.add('buttonRepondre','btn','btn-info','btn-default');
     buttonRepondre.id=`buttonRepondre${i}`;
-    buttonRepondre.addEventListener('click',repondreCom,false);
+    if("{{current_user.username}}"!="")
+    {
+      buttonRepondre.addEventListener('click',repondreCom,false);
+    }
+    else
+    {
+      buttonRepondre.setAttribute('type','button') ;
+      buttonRepondre.setAttribute('data-toggle','tooltip') ;
+      buttonRepondre.setAttribute('data-placement','top');
+      buttonRepondre.setAttribute('title',"Il faut se connecter pour pouvoir repondre") ;
+      buttonRepondre.addEventListener('click',function(e){alert("connectez vous d'abord");},false);
+    }
+
     ULCom.appendChild(buttonRepondre);
 
     let ULReponses = document.createElement("UL");
@@ -197,7 +215,7 @@ function afficheCommentaires(commentaires)
       RliText.appendChild(RspanValueText);
       ULReponse.appendChild(RliText);
 
-      if(commentaire["username"]=="{{current_user.username}}")
+      if(reponse["username"]=="{{current_user.username}}")
       {
         let buttonSupprimerRep = document.createElement("button");
         buttonSupprimerRep.appendChild(document.createTextNode("supprimer"));
