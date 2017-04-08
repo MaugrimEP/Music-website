@@ -271,17 +271,52 @@ def getListCommentaires():
 def supprimerCommentaire():
 	ressource = request.get_json(force=True)
 	idCom = ressource["id"]
+	models.deleteReponse(idCom)
 	DBCom = models.getCommentaireById(idCom)
 	db.session.delete(DBCom)
 	db.session.commit()
 	return jsonify(idCom)
 
 @app.route("/editerCommentaire", methods=['GET','POST'])
+@login_required
 def editierCommentaire():
 	ressource = request.get_json(force=True);
 	idCom = ressource["id"]
 	newText = ressource["text"]
 	dbCommentaire = models.getCommentaireById(idCom)
 	dbCommentaire.texte=newText
+	db.session.commit()
+	return jsonify(ressource)
+
+@app.route("/repondreCommentaire", methods=['GET','POST'])
+@login_required
+def repondreCommentaire():
+	ressource = request.get_json(force=True);
+	idCom = ressource["idCom"]
+	texte = ressource["text"]
+	username = ressource["username"]
+	dbReponse = models.Reponse(idCom=idCom,username=username,texte=texte)
+	db.session.add(dbReponse)
+	db.session.commit()
+	return jsonify(ressource)
+
+@app.route("/supprimerReponse", methods=['GET','POST'])
+@login_required
+def supprimerReponse():
+	ressource = request.get_json(force=True)
+	idRep = ressource["id"]
+	DBRep = models.getReponseById(idRep)
+	db.session.delete(DBRep)
+	db.session.commit()
+	return jsonify(idRep)
+
+@app.route("/editerReponse", methods=['GET','POST'])
+@login_required
+def editerReponse():
+	ressource = request.get_json(force=True);
+	idRep = ressource["id"]
+	newText = ressource["text"]
+	dbReponse = models.getReponseById(idRep)
+	dbReponse.texte=newText
 	db.session.commit()
 	return jsonify(ressource)
