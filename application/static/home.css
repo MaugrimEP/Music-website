@@ -17,3 +17,9 @@ button
 {
   margin:0.2em;
 }
+
+
+.texte
+{
+  word-wrap: break-word;
+}
